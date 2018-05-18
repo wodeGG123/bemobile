@@ -15,11 +15,11 @@ export default StyleSheet.create({
     },
     imgWrap:{
         width:parseInt(width/2)-32,
-        height:(parseInt(width/2-32)*0.6),
+        height:(parseInt(width/2-32)*0.8),
     },
     img:{
         width:parseInt(width/2)-32,
-        height:(parseInt(width/2-32)*0.6),
+        height:(parseInt(width/2-32)*0.8),
     },
     imgText:{
         position:'absolute',
@@ -27,12 +27,9 @@ export default StyleSheet.create({
         bottom:2,
         backgroundColor:'transparent',
         color:'#F6B710',
+        width:'100%',
+        height:24,
+        lineHeight:24,
+        backgroundColor:'rgba(0,0,0,0.4)'
     },
-    text:{
-        width:parseInt(width/2)-20,
-        backgroundColor:'transparent',
-        marginTop:6,
-        paddingLeft:6,
-        color:'#5FFFFE',
-    }
 });

@@ -45,7 +45,7 @@ export default StyleSheet.create({
     },
     scanAllPlaceholder:{
         width,
-        height:40,
+        height:Platform.OS=='ios'?64:40,
         backgroundColor:'transparent',
     }
 });

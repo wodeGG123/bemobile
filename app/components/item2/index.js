@@ -6,7 +6,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 import styles from './style';
-var imgObj = require('./img/chart.png');
+var imgObj = require('./img/chart.jpg');
 
 export default class Main extends Component {
   handleClick(){
@@ -26,9 +26,8 @@ export default class Main extends Component {
               source={imgObj}
               resizeMode={'cover'}
             />
-            <Text style={styles.imgText}>{data&&data.reportName}</Text>
+            <Text style={styles.imgText}>{data&&data.groupName}</Text>
         </View>
-        <Text style={styles.text}>创建者：{data&&data.createUserId}</Text>
       </View>
       </TouchableHighlight>
     );

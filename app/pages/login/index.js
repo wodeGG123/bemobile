@@ -4,6 +4,7 @@ import {
   View,
   Alert,
   StatusBar,
+  AsyncStorage,
   TouchableHighlight,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,11 +15,12 @@ import { Hideo } from 'react-native-textinput-effects';
 import { Hoshi } from 'react-native-textinput-effects';
 import RightButton from './rightButton/index';
 import styles from './style';
+import member from '../../request/member'
 
 var schema = require('async-validator');
 
 
-export default class Main extends Component {
+class Main extends Component {
   //设置router->login的参数
   static navigationOptions = ({ navigation }) => {
     //组件在安卓中有bug，headerLeft、headerRight、都要设置，标题才能居中
@@ -34,7 +36,7 @@ export default class Main extends Component {
   constructor(props){
     super(props);
     this.state = {
-      name:'',
+      username:'',
       password:'',
       ip:'',
       port:'',
@@ -44,29 +46,137 @@ export default class Main extends Component {
   componentDidMount() {
     //把模态窗赋给router，这样在
     this.props.navigation.setParams({ modalConfig: this.refs.modalConfig });
+    //判断是否登录过且记住登录
+    this.isLogined();
   }
   handleSubmit(){
-    var {name,password,ip,port} = this.state;
+    var {username,password,ip,port} = this.state;
+    //设置表单验证规则
     var descriptor = {
-      name: {type: "string", required: true},
+      username: {type: "string", required: true},
       password: {type: "string", required: true},
       ip: {type: "string", required: true},
       port: {type: "string", required: true},
     }
     var validator = new schema(descriptor);
-
+    //表单验证
     validator.validate({
-      name,
+      username,
       password,
       ip,
       port
     }, (errors, fields) => {
+      //验证全部通过
       if(!errors) {
-        this.props.navigation.push('Home');
-      }else{
+        member.login({
+          username,
+          password,
+          ip,
+          port
+        })
+        .then((data)=>{
+          //请求错误
+          if(data == undefined){
+            Alert.alert('配置错误！')
+            return false;
+          }
+          //用户名密码正确
+          if(data.statusCode == '200'){
+            //设置store的userInfo
+            this.setStore({
+              username,
+              password,
+              ip,
+              port,
+              token:data.data
+            });
+            //设置本地存储
+            if(this.state.remember){
+              this.setLocalStorage({
+                username,
+                password,
+                ip,
+                port,
+                token:data.data
+              })
+            }else{
+              this.removeLocalStorage();
+            }
+            
+            this.props.navigation.push('Home');
+          }
+          //用户名密码失败
+          else{
+            Alert.alert('用户名或密码错误！');
+          }
+        })
+      }
+      //验证失败
+      else{
         Alert.alert(errors[0].message)
       }
       
+    });
+  }
+  setStore(param){
+    this.context.store.dispatch({
+      type:'SET_USER_INFO',
+      data:param
+    })
+  }
+  setLocalStorage(param){
+    AsyncStorage.setItem('userInfo',JSON.stringify(param));
+  }
+  removeLocalStorage(){
+    AsyncStorage.removeItem('userInfo');
+  }
+  isLogined(){
+    let userInfo = false;
+    AsyncStorage.getItem('userInfo')
+    .then((data)=>{
+      if(data){
+        userInfo = JSON.parse(data);
+        let {username,password,ip,port} = userInfo;
+        member.login({
+          username,
+          password,
+          ip,
+          port
+        })
+        .then((data)=>{
+          //请求错误
+          if(data == undefined){
+            Alert.alert('配置错误！')
+            return false;
+          }
+          //用户名密码正确
+          if(data.statusCode == '200'){
+            //设置store的userInfo
+            this.setStore({
+              username,
+              password,
+              ip,
+              port,
+              token:data.data
+            });
+            //设置本地存储
+            this.setLocalStorage({
+              username,
+              password,
+              ip,
+              port,
+              token:data.data
+            })
+           
+            this.props.navigation.push('Home');
+          }
+          //用户名密码失败
+          else{
+            Alert.alert('用户名或密码错误！');
+          }
+        })
+
+      }
     });
   }
   render() {
@@ -81,6 +191,7 @@ export default class Main extends Component {
             </View>
             <View style={styles.inputWrap}>
               <Hideo
+                autoCapitalize='none'
                 iconClass={FontAwesomeIcon}
                 iconName={'user'}
                 iconColor={'white'}
@@ -89,11 +200,12 @@ export default class Main extends Component {
                 style={styles.labelStyle}
                 placeholder='账号'
                 placeholderTextColor='rgba(255,255,255,0.5)'
-                onChangeText={(text) => { this.setState({name: text}) }}
+                onChangeText={(text) => { this.setState({username: text}) }}
               />
             </View>
             <View style={styles.inputWrap}>
               <Hideo
+                autoCapitalize='none'
                 iconClass={FontAwesomeIcon}
                 iconName={'unlock-alt'}
                 iconColor={'white'}
@@ -133,6 +245,7 @@ export default class Main extends Component {
             <Text style={styles.modalTitle}>接口设置</Text>
             <View style={styles.modalInputWrap}>
               <Hoshi
+                autoCapitalize='none'
                 label={'IP地址'}
                 borderColor={'#F6B710'}
                 onChangeText={(text) => { this.setState({ip: text}) }}
@@ -140,6 +253,7 @@ export default class Main extends Component {
             </View>
             <View style={styles.modalInputWrap}>
               <Hoshi
+                autoCapitalize='none'
                 label={'端口号'}
                 borderColor={'#F6B710'}
                 onChangeText={(text) => { this.setState({port: text}) }}
@@ -156,4 +270,5 @@ export default class Main extends Component {
   }
 }
 
+export default Main
 

@@ -3,14 +3,40 @@ import {
   Text,
   View,
   TouchableHighlight,
+  AsyncStorage,
 } from 'react-native';
 import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './style';
+import member from '../../../request/member'
 
 export default class RightButton extends Component {
+  static contextTypes = {
+    store:React.PropTypes.object
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
   handleExit(){
-    this.props.navigation.pop();
+    let userInfo = this.context.store.getState().userInfo;
+    let {ip,port,token} = userInfo;
+    member.loginOut({
+      ip,
+      port,
+      token,
+    }).then((data)=>{
+      if(data.statusCode == '200'){
+        AsyncStorage.removeItem('userInfo');
+        this.context.store.dispatch({
+          type:'SET_USER_INFO',
+          data:false
+        })
+        this.props.navigation.pop();
+
+      }
+    })
   }
   render() {
     return (

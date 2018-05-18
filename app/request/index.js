@@ -1,4 +1,4 @@
-var fetch =  require('whatwg-fetch')
+import'whatwg-fetch'
 import config from '../config/index'
 
 let Request = new Object();
