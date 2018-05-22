@@ -6,6 +6,7 @@ import {
   ListView,
   Dimensions,
   TouchableHighlight,
+  RefreshControl
 } from 'react-native';
 import styles from './style';
 import Header from '../../components/header/index';
@@ -37,6 +38,7 @@ export default class Main extends Component {
       recentRows:5,
       dataSourceList:[],
       searchText:'',
+      isRefreshing:false
     };
   }
   componentWillMount(){
@@ -61,6 +63,8 @@ export default class Main extends Component {
       limitNum: recentRows,
       glanceScene: 1,
       loginId:userInfo.token,
+      ip:userInfo.ip,
+      port:userInfo.port,
     })
     .then((data)=>{
       if(data.statusCode == '200'){
@@ -88,14 +92,20 @@ export default class Main extends Component {
       index: page,
       rows: rows,
       loginId:userInfo.token,
+      ip:userInfo.ip,
+      port:userInfo.port,
     })
     .then((data)=>{
       if(data.statusCode == '200'){
-        dataSourceList = dataSourceList.concat(data.data.list);
+        let maxPage = Math.ceil(data.data.total/rows);//最大页数
+        if(maxPage >= page){
+          dataSourceList = dataSourceList.concat(data.data.list);
+        }
         //如果是第一次获取
         if(page==1){
           dataSourceList=data.data.list
         }
+        
         let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
         this.setState({
           dataSource,
@@ -123,6 +133,9 @@ export default class Main extends Component {
       })
     }
   }
+  onRefresh(){
+    this.getRecentData();
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -140,6 +153,14 @@ export default class Main extends Component {
             right={<Search onSearch={(text)=>{this.onSearch(text)}} />}
           />
           <ListView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.onRefresh.bind(this)}
+                title="Loading..."
+                titleColor="#eeeeee"
+              />
+            }
             enableEmptySections={true}
             dataSource={this.state.dataSource}
             renderRow={(rowData) => <Item data={rowData} navigation={this.props.navigation} />}

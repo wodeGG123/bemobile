@@ -16,6 +16,7 @@ import { Hoshi } from 'react-native-textinput-effects';
 import RightButton from './rightButton/index';
 import styles from './style';
 import member from '../../request/member'
+import sys from '../../request/system';
 
 var schema = require('async-validator');
 
@@ -82,28 +83,37 @@ class Main extends Component {
           }
           //用户名密码正确
           if(data.statusCode == '200'){
+           //获取系统信息
+           sys.getInfo({
+            loginId:data.data,
+            ip:ip,
+            port:port
+          })
+          .then((data2)=>{
+
             //设置store的userInfo
             this.setStore({
               username,
               password,
               ip,
               port,
-              token:data.data
+              token:data.data,
+              reportUrl:data2.data.reportUrl,
             });
             //设置本地存储
-            if(this.state.remember){
-              this.setLocalStorage({
-                username,
-                password,
-                ip,
-                port,
-                token:data.data
-              })
-            }else{
-              this.removeLocalStorage();
-            }
-            
+            this.setLocalStorage({
+              username,
+              password,
+              ip,
+              port,
+              token:data.data,
+              reportUrl:data2.data.reportUrl,
+            })
+          
             this.props.navigation.push('Home');
+
+
+            });
           }
           //用户名密码失败
           else{
@@ -151,24 +161,41 @@ class Main extends Component {
           }
           //用户名密码正确
           if(data.statusCode == '200'){
-            //设置store的userInfo
-            this.setStore({
-              username,
-              password,
-              ip,
-              port,
-              token:data.data
-            });
-            //设置本地存储
-            this.setLocalStorage({
-              username,
-              password,
-              ip,
-              port,
-              token:data.data
+
+            //获取系统信息
+            sys.getInfo({
+              loginId:data.data,
+              ip:ip,
+              port:port
             })
-           
-            this.props.navigation.push('Home');
+            .then((data2)=>{
+
+              //设置store的userInfo
+              this.setStore({
+                username,
+                password,
+                ip,
+                port,
+                token:data.data,
+                reportUrl:data2.data.reportUrl,
+              });
+              //设置本地存储
+              this.setLocalStorage({
+                username,
+                password,
+                ip,
+                port,
+                token:data.data,
+                reportUrl:data2.data.reportUrl,
+              })
+            
+              this.props.navigation.push('Home');
+
+
+            });
+
+
+            
           }
           //用户名密码失败
           else{

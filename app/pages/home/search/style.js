@@ -25,7 +25,9 @@ export default StyleSheet.create({
         marginLeft:5,
         borderWidth:0,
         backgroundColor:'transparent',
-        height:32,
-        lineHeight:32,
+        marginBottom:0,
+        marginTop:0,
+        paddingBottom:0,
+        paddingTop:0,
     }
 });

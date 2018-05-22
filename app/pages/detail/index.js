@@ -16,18 +16,23 @@ export default class Main extends Component {
       headerRight: <View></View>,
     };
   }
-
   render() {
+    let uri = 'http://10.0.5.58:8488/sefon-cas/autologin?username=admin&password=319a5d2ce2e52aaec8c09008ee85517f&token=a&credentials=b&service=';
+    uri += this.props.navigation.state.params.reportUrl + '/' + this.props.navigation.state.params.flowId + '/index.html'
+    // uri += 'https://www.baidu.com'
     //在详情中展示webView
     return (
       <View style={styles.container}>
           <WebView
             style={styles.webView}
-            source={{uri: 'http://10.0.5.58:8488/sefon-cas/autologin?username=admin&password=319a5d2ce2e52aaec8c09008ee85517f&token=a&credentials=b&service=http://10.0.5.58:8080/sae'}}
+            source={{uri}}
             scalesPageToFit={true}
           />
       </View>
     );
+  }
+  componentWillMount(){
+    console.log(this.props);
   }
 }
 

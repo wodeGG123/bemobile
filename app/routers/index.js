@@ -28,6 +28,7 @@ export default createStackNavigator({
     Detail: {
         screen: DetailScreen,
         navigationOptions:{
+            123
             headerTitle:<Title>详情</Title>,
             headerStyle: styles.header,
         }

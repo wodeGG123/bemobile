@@ -27,9 +27,11 @@ export default StyleSheet.create({
         bottom:2,
         backgroundColor:'transparent',
         color:'#F6B710',
-        width:'100%',
+        width:parseInt(width/2)-32,
         height:24,
         lineHeight:24,
-        backgroundColor:'rgba(0,0,0,0.4)'
+        backgroundColor:'rgba(0,0,0,0.4)',
+        padding:0,
+        margin:0,
     },
 });

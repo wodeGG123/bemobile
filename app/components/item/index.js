@@ -6,11 +6,19 @@ import {
   TouchableHighlight
 } from 'react-native';
 import styles from './style';
-var imgObj = require('./img/chart.png');
+import sys from '../../request/system';
+var imgObj = require('./img/chart.jpg');
 
 export default class Main extends Component {
+  static contextTypes = {
+    store:React.PropTypes.object
+  }
   handleClick(){
-    this.props.navigation.push('Detail');
+    let userInfo = this.context.store.getState().userInfo;
+    this.props.navigation.push('Detail',{
+      reportUrl:userInfo.reportUrl,
+      flowId:this.props.data.flowId,
+    });
   }
 
   render() {

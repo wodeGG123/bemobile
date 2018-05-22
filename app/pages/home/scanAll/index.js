@@ -7,10 +7,13 @@ import {
   TouchableHighlight,
   Dimensions,
   Platform,
+  RefreshControl
 } from 'react-native';
 import styles from './style';
 import Item2 from '../../../components/item2/index';
 import Item from '../../../components/item/index';
+import GroupReportList from '../groupReportList/index';
+
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import report from '../../../request/report';
 
@@ -34,6 +37,8 @@ export default class Main extends Component {
       rows:50,//设置每一页多少行
       groupPage:1,
       reportPage:1,
+      groupId:'',
+      isRefreshing:false,
     };
   }
   handleClick(){
@@ -72,18 +77,24 @@ export default class Main extends Component {
       index: groupPage,
       rows,
       loginId:userInfo.token,
+      ip:userInfo.ip,
+      port:userInfo.port,
     })
     .then((data)=>{
       if(data.statusCode == '200'){
         //如果分组列表结果大于rows则不需要请求report列表
+        let groupMaxPage = Math.ceil(data.data.total/rows);//计算group最大页数
         if(parseInt(data.data.list.length) == parseInt(rows)){
-          dataSourceList = dataSourceList.concat(data.data.list);
-          let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
-          this.setState({
-            dataSource,
-            dataSourceList,
-            groupPage:groupPage+1,
-          });
+          //判断是否是最后一页，如果是最后一页后一页，则不渲染
+          if(groupMaxPage >= groupPage){
+            dataSourceList = dataSourceList.concat(data.data.list);
+            let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
+            this.setState({
+              dataSource,
+              dataSourceList,
+              groupPage:groupPage+1,
+            });
+          }
         }else{
           //获取报表列表
           report.list({
@@ -93,10 +104,21 @@ export default class Main extends Component {
             index: reportPage,
             rows: rows-parseInt(data.data.total),//与分组互补rows
             loginId:userInfo.token,
+            ip:userInfo.ip,
+            port:userInfo.port,
           })
           .then((data2)=>{
             if(data2.statusCode == '200'){
-              dataSourceList = dataSourceList.concat(data.data.list,data2.data.list);
+              let reportMaxPage = Math.ceil(data2.data.total/rows);
+              //判断是否是最后一页，如果是最后一页后一页，则不渲染↓↓↓↓↓↓
+              if(groupMaxPage >= groupPage){
+                dataSourceList = dataSourceList.concat(data.data.list,data2.data.list);
+              }else{
+                if(reportMaxPage >= reportPage){
+                  dataSourceList = dataSourceList.concat(data2.data.list);
+                }
+              }
+              //判断是否是最后一页，如果是最后一页后一页，则不渲染↑↑↑↑↑↑
               let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
               this.setState({
                 dataSource,
@@ -107,15 +129,25 @@ export default class Main extends Component {
             }
           });
         }
-
-
-       
-
       }
     });
   }
   onEndReached(){
     this.getData()
+  }
+  onItem2Click(groupId){
+    this.setState({
+      groupId
+    },()=>{
+      this.refs.GroupReportList.handleClick();
+    })
+  }
+  onRefresh(){
+    this.setState({
+      groupPage:1,
+      reportPage:1,
+      groupId:'',
+    },()=>{this.getData()})
   }
   render() {
     return (
@@ -131,12 +163,20 @@ export default class Main extends Component {
               </View>
       </TouchableHighlight>
       <ListView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.onRefresh.bind(this)}
+                title="Loading..."
+                titleColor="#eeeeee"
+              />
+            }
             enableEmptySections={true}
             dataSource={this.state.dataSource}
             renderRow={(rowData) => {
               if(rowData.groupName){
                 //分组列表
-                return <Item2 data={rowData} navigation={this.props.navigation} />
+                return <Item2 handleClick={()=>{this.onItem2Click(rowData.flowId)}} data={rowData} navigation={this.props.navigation} />
               }else{
                 //非分组列表
                 return <Item data={rowData} navigation={this.props.navigation} />
@@ -147,6 +187,8 @@ export default class Main extends Component {
             onEndReached={()=>{this.onEndReached()}}
       />
        <View style={styles.scanAllPlaceholder}></View>
+       <GroupReportList navigation={this.props.navigation} groupId={this.state.groupId} ref='GroupReportList' />
+       
     </Animated.View>
      
     );

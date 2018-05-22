@@ -10,7 +10,7 @@ var imgObj = require('./img/chart.jpg');
 
 export default class Main extends Component {
   handleClick(){
-    this.props.navigation.push('Detail');
+    this.props.handleClick()
   }
 
   render() {

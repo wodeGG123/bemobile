@@ -1,0 +1,136 @@
+import React, { Component } from 'react';
+import {
+  Text,
+  View,
+  ListView,
+  Animated,
+  TouchableHighlight,
+  Dimensions,
+  Platform,
+  RefreshControl
+} from 'react-native';
+import styles from './style';
+import Item2 from '../../../components/item2/index';
+import Item from '../../../components/item/index';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import report from '../../../request/report';
+
+var {height, width} = Dimensions.get('window');
+
+export default class Main extends Component {
+  static contextTypes = {
+    store:React.PropTypes.object
+  }
+  constructor(props) {
+    super(props);
+    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.state = {
+      dataSource: ds.cloneWithRows([]),
+      drawOpen:false,
+      fadeAnim:new Animated.Value(-height+40),
+      spread:false,
+      wrapHeight:Platform.OS=='ios'?height:false,
+      userInfo:false,
+      dataSourceList:[],
+      rows:50,//设置每一页多少行
+      page:1,
+      isRefreshing:false,
+    };
+  }
+  handleClick(){
+    let _Val = -this.state.wrapHeight;
+    if(!this.state.spread){
+      _Val = 0;
+      this.getData();
+    }
+    Animated.timing(          
+      this.state.fadeAnim,    
+      {toValue: _Val},           
+    ).start();               
+    this.setState({
+      spread:!this.state.spread
+    })
+  }
+  onLayout(e){
+    let {x,y,width,height:reHeight} = e.nativeEvent.layout;
+    if(height != reHeight && !this.state.wrapHeight){
+      this.setState({
+        fadeAnim:new Animated.Value(-reHeight),
+        wrapHeight:reHeight
+      })
+    }
+  }
+  getData(){
+    if(this.props.groupId){
+      let userInfo = this.context.store.getState().userInfo;
+      let {dataSourceList,rows,page} = this.state;
+      //获取报表列表
+      report.list({
+        isPublished: 1,
+        isOwn: 1,
+        isContainsGroupedReport: 0,
+        groupId: this.props.groupId,
+        loginId:userInfo.token,
+        ip:userInfo.ip,
+        port:userInfo.port,
+      })
+      .then((data)=>{
+        if(data.statusCode == '200'){
+          dataSourceList = data.data.list;
+          let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
+          this.setState({
+            dataSource,
+            dataSourceList,
+            page:page+1,
+          });
+        }
+      });
+    }
+  }
+  onEndReached(){
+    this.getData()
+  }
+  onRefresh(){
+    this.setState({
+      page:1
+    },()=>{this.getData()})
+  }
+  render() {
+    return (
+    <Animated.View onLayout={(e) => {this.onLayout(e)}} style={[styles.container,{bottom:this.state.fadeAnim}]}>
+      <TouchableHighlight
+        activeOpacity={0.6}
+        underlayColor='transparent'
+        onPress={()=>{this.handleClick()}}
+      >
+        <View style={styles.scanAllWrap}>
+          <Text style={styles.scanAllText}>组名</Text>
+          <FontAwesomeIcon style={styles.scanAllIcon} name={'angle-double-down'} />
+        </View>
+      </TouchableHighlight>
+      <ListView
+      refreshControl={
+        <RefreshControl
+          refreshing={this.state.isRefreshing}
+          onRefresh={this.onRefresh.bind(this)}
+          title="Loading..."
+          titleColor="#eeeeee"
+        />
+      }
+        enableEmptySections={true}
+        dataSource={this.state.dataSource}
+        renderRow={(rowData) => {
+            //report列表
+            return <Item data={rowData} navigation={this.props.navigation} />
+        }}
+        contentContainerStyle={styles.listWrap}
+        onEndReachedThreshold={60}
+        onEndReached={()=>{this.onEndReached()}}
+      />
+       <View style={styles.scanAllPlaceholder}></View>
+    </Animated.View>
+     
+    );
+  }
+}
+

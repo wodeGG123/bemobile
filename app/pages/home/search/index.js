@@ -14,6 +14,7 @@ export default class Main extends Component {
       <View style={styles.wrap}>
         <Icon style={styles.icon} name='md-search' />
         <TextInput
+          autoCapitalize='none'
           style={styles.input}
           onChangeText={(text) => this.props.onSearch(text)}
           placeholder={'搜索内容'}
