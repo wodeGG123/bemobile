@@ -20,7 +20,14 @@ export default class Main extends Component {
       flowId:this.props.data.flowId,
     });
   }
-
+  //文本太长 末尾剪切
+  cutTails(str,n){
+    if(str.length>n){
+      return str.substr(0,n-1)+'...'
+    }else{
+      return str
+    }
+  }
   render() {
     let {data} = this.props;
     return (<TouchableHighlight 
@@ -34,9 +41,9 @@ export default class Main extends Component {
               source={imgObj}
               resizeMode={'cover'}
             />
-            <Text style={styles.imgText}>{data&&data.reportName}</Text>
+            <Text style={styles.imgText}>{data&&(this.cutTails(data.reportName,16))}</Text>
         </View>
-        <Text style={styles.text}>创建者：{data&&data.createUserId}</Text>
+        <Text style={styles.text}>创建者：{data&&(this.cutTails(data.createUserId,10))}</Text>
       </View>
       </TouchableHighlight>
     );

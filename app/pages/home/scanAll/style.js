@@ -6,7 +6,6 @@ export default StyleSheet.create({
         height:'100%',
         width,
         position:'absolute',
-        bottom:(-height+40),
         left:0,
         backgroundColor:'#131D33',
     },

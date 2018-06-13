@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   Dimensions,
   Platform,
-  RefreshControl
+  RefreshControl,
+  StatusBar
 } from 'react-native';
 import styles from './style';
 import Item2 from '../../../components/item2/index';
@@ -16,6 +17,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import report from '../../../request/report';
 
 var {height, width} = Dimensions.get('window');
+height = Platform.OS=='ios'?height:height - StatusBar.currentHeight;
 
 export default class Main extends Component {
   static contextTypes = {
@@ -27,9 +29,9 @@ export default class Main extends Component {
     this.state = {
       dataSource: ds.cloneWithRows([]),
       drawOpen:false,
-      fadeAnim:new Animated.Value(-height+40),
+      fadeAnim:0,
       spread:false,
-      wrapHeight:Platform.OS=='ios'?height:false,
+      wrapHeight:0,
       userInfo:false,
       dataSourceList:[],
       rows:50,//设置每一页多少行
@@ -38,7 +40,7 @@ export default class Main extends Component {
     };
   }
   handleClick(){
-    let _Val = -this.state.wrapHeight;
+    let _Val = Platform.OS=='ios'?this.state.wrapHeight-64:this.state.wrapHeight-40
     if(!this.state.spread){
       _Val = 0;
       this.getData();
@@ -51,17 +53,21 @@ export default class Main extends Component {
       spread:!this.state.spread
     })
   }
-  onLayout(e){
-    let {x,y,width,height:reHeight} = e.nativeEvent.layout;
-    if(height != reHeight && !this.state.wrapHeight){
-      this.setState({
-        fadeAnim:new Animated.Value(-reHeight),
-        wrapHeight:reHeight
-      })
-    }
+  componentWillMount(){
+     //获取外框真实高度
+     let a = this.context.store.subscribe(()=>{
+      if(this.context.store.getState().device){
+        let {height} = this.context.store.getState().device;
+        this.setState({
+          fadeAnim:new Animated.Value(Platform.OS=='ios'?height-64:height-40),
+          wrapHeight:height,
+        })
+        a();
+      }
+    })
   }
   getData(){
-    if(this.props.groupId){
+    if(this.props.groupData.flowId){
       let userInfo = this.context.store.getState().userInfo;
       let {dataSourceList,rows,page} = this.state;
       //获取报表列表
@@ -69,7 +75,7 @@ export default class Main extends Component {
         isPublished: 1,
         isOwn: 1,
         isContainsGroupedReport: 0,
-        groupId: this.props.groupId,
+        groupId: this.props.groupData.flowId,
         loginId:userInfo.token,
         ip:userInfo.ip,
         port:userInfo.port,
@@ -97,14 +103,14 @@ export default class Main extends Component {
   }
   render() {
     return (
-    <Animated.View onLayout={(e) => {this.onLayout(e)}} style={[styles.container,{bottom:this.state.fadeAnim}]}>
+    <Animated.View style={[styles.container,{top:this.state.fadeAnim}]}>
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor='transparent'
         onPress={()=>{this.handleClick()}}
       >
         <View style={styles.scanAllWrap}>
-          <Text style={styles.scanAllText}>组名</Text>
+          <Text style={styles.scanAllText}>{this.props.groupData.groupName}</Text>
           <FontAwesomeIcon style={styles.scanAllIcon} name={'angle-double-down'} />
         </View>
       </TouchableHighlight>

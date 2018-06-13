@@ -12,26 +12,26 @@ import member from '../../../request/member'
 
 export default class RightButton extends Component {
   static contextTypes = {
-    store:React.PropTypes.object
+    store: React.PropTypes.object
   }
   constructor(props) {
     super(props);
     this.state = {
     };
   }
-  handleExit(){
+  handleExit() {
     let userInfo = this.context.store.getState().userInfo;
-    let {ip,port,token} = userInfo;
+    let { ip, port, token } = userInfo;
     member.loginOut({
       ip,
       port,
       token,
-    }).then((data)=>{
-      if(data.statusCode == '200'){
+    }).then((data) => {
+      if (data.statusCode == '200') {
         AsyncStorage.removeItem('userInfo');
         this.context.store.dispatch({
-          type:'SET_USER_INFO',
-          data:false
+          type: 'SET_USER_INFO',
+          data: false
         })
         this.props.navigation.pop();
 
@@ -39,26 +39,28 @@ export default class RightButton extends Component {
     })
   }
   render() {
+    let { username } = this.context.store.getState().userInfo;
+    let { i18n: lang } = this.context.store.getState();
     return (
       <View style={styles.wrap}>
         <View style={styles.backWrap}>
-          <Icon style={styles.backIcon} onPress={()=>{this.props.close()}} name='md-arrow-round-back' />
+          <Icon style={styles.backIcon} onPress={() => { this.props.close() }} name='md-arrow-round-back' />
         </View>
         <View style={styles.userInfoWrap}>
           <Icon style={styles.userInfoIcon} name='md-contact' />
-          <Text style={styles.userInfoText}>Admin</Text>
+          <Text style={styles.userInfoText}>{username}</Text>
         </View>
         <View style={styles.exitWrap}>
-          <Button onPress={()=>{this.handleExit()}} style={{backgroundColor: '#F6B610'}}>
+          <Button onPress={() => { this.handleExit() }} style={{ backgroundColor: '#F6B610' }}>
             <View style={styles.exitContent}>
               <Icon style={styles.exitIcon} name='md-log-in' />
-              <Text style={styles.exitText}>退出登录</Text>
+              <Text style={styles.exitText}>{lang.home_userbox_exit}</Text>
             </View>
           </Button>
         </View>
         <View style={styles.infoWrap}>
-            <Text style={styles.infoText1}>SDC BE</Text>
-            <Text style={styles.infoText2}>v1.0.0</Text>
+          <Text style={styles.infoText1}>SDC BE</Text>
+          <Text style={styles.infoText2}>v1.0.0</Text>
         </View>
       </View>
     )

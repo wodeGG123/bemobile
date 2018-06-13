@@ -106,5 +106,8 @@ export default StyleSheet.create({
     modalSubmitWrap:{
         marginTop:50,
         width:width-40,
+    },
+    webWrap:{
+        display:'none'
     }
 });

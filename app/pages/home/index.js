@@ -6,8 +6,10 @@ import {
   ListView,
   Dimensions,
   TouchableHighlight,
-  RefreshControl
+  RefreshControl,
+  Platform
 } from 'react-native';
+import _ from 'lodash';
 import styles from './style';
 import Header from '../../components/header/index';
 import LeftButton from './leftButton/index';
@@ -20,69 +22,69 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import report from '../../request/report';
 
-var {height, width} = Dimensions.get('window');
+var { height, width } = Dimensions.get('window');
 
 export default class Main extends Component {
   static contextTypes = {
-    store:React.PropTypes.object
+    store: React.PropTypes.object
   }
   constructor(props) {
     super(props);
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     this.state = {
       dataSource: ds.cloneWithRows([]),
-      drawOpen:false,
-      userInfo:false,
-      page:1,
-      rows:50,
-      recentRows:5,
-      dataSourceList:[],
-      searchText:'',
-      isRefreshing:false
+      drawOpen: false,
+      userInfo: false,
+      page: 1,
+      rows: 50,
+      recentRows: 5,
+      dataSourceList: [],
+      searchText: '',
+      isRefreshing: false
     };
   }
-  componentWillMount(){
+  componentWillMount() {
     this.getRecentData();
   }
-  drawOpen(){
+  drawOpen() {
     this.setState({
-      drawOpen:true,
+      drawOpen: true,
     })
   }
-  drawClose(){
+  drawClose() {
     this.setState({
-      drawOpen:false,
+      drawOpen: false,
     })
   }
   //获取最近report
-  getRecentData(){
+  getRecentData() {
     let userInfo = this.context.store.getState().userInfo;
-    let {recentRows,dataSourceList} = this.state;
+    let { recentRows, dataSourceList } = this.state;
     report.recentReport({
       isOwn: 1,
       limitNum: recentRows,
       glanceScene: 1,
-      loginId:userInfo.token,
-      ip:userInfo.ip,
-      port:userInfo.port,
+      loginId: userInfo.token,
+      ip: userInfo.ip,
+      port: userInfo.port,
     })
-    .then((data)=>{
-      if(data.statusCode == '200'){
-        dataSourceList = data.data;
-        let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
-        this.setState({
-          dataSource,
-          page:1,
-          dataSourceList,
-        });
-      }
-      
-    })
+      .then((data) => {
+        if (data.statusCode == '200') {
+          dataSourceList = data.data;
+          let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
+          this.setState({
+            dataSource,
+            page: 1,
+            dataSourceList,
+          });
+        }
+
+      })
   }
   //获取报表列表
-  getData(){
+  getData() {
     let userInfo = this.context.store.getState().userInfo;
-    let {rows,dataSourceList,page,searchText} = this.state;
+    let { rows, dataSourceList, page, searchText } = this.state;
 
     report.list({
       searchKey: searchText,
@@ -91,66 +93,79 @@ export default class Main extends Component {
       isContainsGroupedReport: 0,
       index: page,
       rows: rows,
-      loginId:userInfo.token,
-      ip:userInfo.ip,
-      port:userInfo.port,
+      loginId: userInfo.token,
+      ip: userInfo.ip,
+      port: userInfo.port,
     })
-    .then((data)=>{
-      if(data.statusCode == '200'){
-        let maxPage = Math.ceil(data.data.total/rows);//最大页数
-        if(maxPage >= page){
-          dataSourceList = dataSourceList.concat(data.data.list);
+      .then((data) => {
+        if (data.statusCode == '200') {
+          let maxPage = Math.ceil(data.data.total / rows);//最大页数
+          if (maxPage >= page) {
+            dataSourceList = dataSourceList.concat(data.data.list);
+          }
+          //如果是第一次获取
+          if (page == 1) {
+            dataSourceList = data.data.list
+          }
+
+          let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
+          this.setState({
+            dataSource,
+            dataSourceList,
+            page: page + 1,
+          });
         }
-        //如果是第一次获取
-        if(page==1){
-          dataSourceList=data.data.list
-        }
-        
-        let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
-        this.setState({
-          dataSource,
-          dataSourceList,
-          page:page+1,
-        });
-      }
-    });
+      });
   }
-  onEndReached(){
+  onEndReached() {
     //判断是否是搜索
-    if(this.state.searchText.trim() != ''){
+    if (this.state.searchText.trim() != '') {
       this.getData();
     }
   }
-  onSearch(text){
-    if(text.trim() == ''){
+  onSearch = _.debounce((text) => {
+    if (text.trim() == '') {
       this.getRecentData();
-    }else{
       this.setState({
-        searchText:text,
-        page:1,
-      },()=>{
+        searchText: text,
+        page: 1,
+      });
+    } else {
+      this.setState({
+        searchText: text,
+        page: 1,
+      }, () => {
         this.getData();
       })
     }
-  }
-  onRefresh(){
+  }, 500)
+  onRefresh() {
     this.getRecentData();
+  }
+  setWraperSize(e) {
+    this.context.store.dispatch({
+      type: 'SET_DEVICE_SIZE',
+      data: {
+        height: e.nativeEvent.layout.height,
+        width: e.nativeEvent.layout.width,
+      }
+    })
   }
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.container} onLayout={this.setWraperSize.bind(this)}>
         <StatusBar barStyle={'light-content'} />
         <Drawer
           type="overlay"
-          content={<UserBox navigation={this.props.navigation} close={()=>{this.drawClose()}} />}
+          content={<UserBox navigation={this.props.navigation} close={() => { this.drawClose() }} />}
           open={this.state.drawOpen}
           acceptTap={true}
-          openDrawerOffset={width-240}
-          onClose={()=>{this.drawClose()}}
-          >
+          openDrawerOffset={width - 240}
+          onClose={() => { this.drawClose() }}
+        >
           <Header
-            left={<LeftButton onPress={()=>{this.drawOpen()}}/>}
-            right={<Search onSearch={(text)=>{this.onSearch(text)}} />}
+            left={<LeftButton onPress={() => { this.drawOpen() }} />}
+            right={<Search onSearch={(text) => { this.onSearch(text) }} />}
           />
           <ListView
             refreshControl={
@@ -166,7 +181,7 @@ export default class Main extends Component {
             renderRow={(rowData) => <Item data={rowData} navigation={this.props.navigation} />}
             contentContainerStyle={styles.listWrap}
             onEndReachedThreshold={60}
-            onEndReached={()=>{this.onEndReached()}}
+            onEndReached={() => { this.onEndReached() }}
           />
           <View style={styles.scanAllPlaceholder}></View>
           <ScanAll navigation={this.props.navigation} />

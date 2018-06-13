@@ -1,6 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
 var {height, width} = Dimensions.get('window');
-
 export default StyleSheet.create({
     wrap:{
         display:'flex',
@@ -9,7 +8,7 @@ export default StyleSheet.create({
         width:240,
         paddingLeft:10,
         paddingRight:10,
-        height,
+        height:'100%',
         backgroundColor:'#1D2D54'
     },
     backWrap:{
