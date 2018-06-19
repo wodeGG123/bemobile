@@ -21,6 +21,7 @@ import Drawer from 'react-native-drawer';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import report from '../../request/report';
+import DetailScreen from './detail/index';
 
 var { height, width } = Dimensions.get('window');
 
@@ -40,7 +41,9 @@ export default class Main extends Component {
       recentRows: 5,
       dataSourceList: [],
       searchText: '',
-      isRefreshing: false
+      isRefreshing: false,
+      isDetailShow: false,
+      detailPreLoad: '',
     };
   }
   componentWillMount() {
@@ -61,7 +64,7 @@ export default class Main extends Component {
     let userInfo = this.context.store.getState().userInfo;
     let { recentRows, dataSourceList } = this.state;
     report.recentReport({
-      isOwn: 1,
+      isOwn: 2,
       limitNum: recentRows,
       glanceScene: 1,
       loginId: userInfo.token,
@@ -76,6 +79,7 @@ export default class Main extends Component {
             dataSource,
             page: 1,
             dataSourceList,
+            detailPreLoad: dataSourceList[0]
           });
         }
 
@@ -89,7 +93,7 @@ export default class Main extends Component {
     report.list({
       searchKey: searchText,
       isPublished: 1,
-      isOwn: 1,
+      isOwn: 2,
       isContainsGroupedReport: 0,
       index: page,
       rows: rows,
@@ -151,6 +155,9 @@ export default class Main extends Component {
       }
     })
   }
+  detailShow(data) {
+    this.refs.Detail.show(data)
+  }
   render() {
     return (
       <View style={styles.container} onLayout={this.setWraperSize.bind(this)}>
@@ -178,14 +185,15 @@ export default class Main extends Component {
             }
             enableEmptySections={true}
             dataSource={this.state.dataSource}
-            renderRow={(rowData) => <Item data={rowData} navigation={this.props.navigation} />}
+            renderRow={(rowData) => <Item data={rowData} detailShow={(data) => { this.detailShow(data) }} navigation={this.props.navigation} />}
             contentContainerStyle={styles.listWrap}
             onEndReachedThreshold={60}
             onEndReached={() => { this.onEndReached() }}
           />
           <View style={styles.scanAllPlaceholder}></View>
-          <ScanAll navigation={this.props.navigation} />
+          <ScanAll detailShow={(data) => { this.detailShow(data) }} navigation={this.props.navigation} />
         </Drawer>
+        <DetailScreen ref='Detail' detailPreLoad={this.state.detailPreLoad} show={this.state.isDetailShow} />
       </View>
     );
   }

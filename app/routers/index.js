@@ -8,7 +8,7 @@ import Title from "./title";
 //页面
 import LoginScreen from '../pages/login/index';
 import HomeScreen from '../pages/home/index';
-import DetailScreen from '../pages/detail/index';
+// import DetailScreen from '../pages/detail/index';
 
 //RN-router 默认加载第一个
 export default createStackNavigator({
@@ -24,10 +24,10 @@ export default createStackNavigator({
             header: null,
         }
     },
-    Detail: {
-        screen: DetailScreen,
-        navigationOptions: {
-            headerStyle: styles.header,
-        }
-    }
+    // Detail: {
+    //     screen: DetailScreen,
+    //     navigationOptions: {
+    //         headerStyle: styles.header,
+    //     }
+    // }
 });

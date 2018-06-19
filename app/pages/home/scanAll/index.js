@@ -107,7 +107,7 @@ export default class Main extends Component {
             //获取报表列表
             report.list({
               isPublished: 1,
-              isOwn: 1,
+              isOwn: 2,
               isContainsGroupedReport: 0,
               index: reportPage,
               rows: rows - parseInt(data.data.total),//与分组互补rows
@@ -183,12 +183,12 @@ export default class Main extends Component {
           enableEmptySections={true}
           dataSource={this.state.dataSource}
           renderRow={(rowData) => {
-            if (rowData.groupName) {
+            if (rowData && rowData.groupName) {
               //分组列表
               return <Item2 handleClick={() => { this.onItem2Click(rowData) }} data={rowData} navigation={this.props.navigation} />
             } else {
               //非分组列表
-              return <Item data={rowData} navigation={this.props.navigation} />
+              return <Item data={rowData} detailShow={(data) => { this.props.detailShow(data) }} navigation={this.props.navigation} />
             }
           }}
           contentContainerStyle={styles.listWrap}
@@ -196,7 +196,7 @@ export default class Main extends Component {
           onEndReached={() => { this.onEndReached() }}
         />
         <View style={styles.scanAllPlaceholder}></View>
-        <GroupReportList navigation={this.props.navigation} groupData={this.state.groupData} ref='GroupReportList' />
+        <GroupReportList navigation={this.props.navigation} detailShow={(data) => { this.props.detailShow(data) }} groupData={this.state.groupData} ref='GroupReportList' />
 
       </Animated.View>
 
