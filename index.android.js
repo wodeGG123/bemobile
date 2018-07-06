@@ -14,7 +14,7 @@ import App from './app/index';
 
 export default class bemobile extends Component {
   render() {
-    return (<App/>);
+    return (<App />);
   }
 }
 

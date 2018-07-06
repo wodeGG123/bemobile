@@ -75,9 +75,11 @@ export default class Main extends Component {
     this.state.unGettingSize();
   }
   getData() {
-
     let userInfo = this.context.store.getState().userInfo;
     let { dataSourceList, rows, groupPage, reportPage } = this.state;
+    if (groupPage == 1) {
+      dataSourceList = [];
+    }
     //获取分组列表
     report.reportGroup({
       isPublished: 1,

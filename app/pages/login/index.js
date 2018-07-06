@@ -116,7 +116,6 @@ class Main extends Component {
                 port: port
               })
                 .then((data2) => {
-
                   //设置store的userInfo
                   this.setStore({
                     username,
@@ -126,6 +125,7 @@ class Main extends Component {
                     token: data.data,
                     reportUrl: data2.data.reportUrl,
                     casServer: data2.data.casServer,
+                    runnerUrl: data2.data.runnerUrl,
                   });
                   //设置自动登录（webview组件需要）
                   let userInfo = this.state;
@@ -140,6 +140,7 @@ class Main extends Component {
                     token: data.data,
                     reportUrl: data2.data.reportUrl,
                     casServer: data2.data.casServer,
+                    runnerUrl: data2.data.runnerUrl,
                   })
                 });
             }
@@ -224,6 +225,7 @@ class Main extends Component {
                       token: data.data,
                       reportUrl: data2.data.reportUrl,
                       casServer: data2.data.casServer,
+                      runnerUrl: data2.data.runnerUrl,
                     });
                     //设置自动登录（webview组件需要）
                     userInfo.casServer = data2.data.casServer;
@@ -235,6 +237,7 @@ class Main extends Component {
                       token: data.data,
                       reportUrl: data2.data.reportUrl,
                       casServer: data2.data.casServer,
+                      runnerUrl: data2.data.runnerUrl,
                     }, () => {
                       this.setAutoLogin(userInfo);
                     })
