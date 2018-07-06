@@ -108,6 +108,6 @@ export default StyleSheet.create({
         width: width - 40,
     },
     webWrap: {
-        display: 'none'
+        // display: 'none'
     }
 });

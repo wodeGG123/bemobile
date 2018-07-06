@@ -59,7 +59,6 @@ class Main extends Component {
       port: '',
       remember: true,//记住登录
       loadingOverlayVisible: false,
-      autoLoginUri: false,
     }
   }
   componentWillMount() {
@@ -116,6 +115,7 @@ class Main extends Component {
                 port: port
               })
                 .then((data2) => {
+
                   //设置store的userInfo
                   this.setStore({
                     username,
@@ -130,7 +130,6 @@ class Main extends Component {
                   //设置自动登录（webview组件需要）
                   let userInfo = this.state;
                   userInfo.casServer = data2.data.casServer;
-                  this.setAutoLogin(userInfo);
                   //设置本地存储
                   this.setLocalStorage({
                     username,
@@ -142,6 +141,10 @@ class Main extends Component {
                     casServer: data2.data.casServer,
                     runnerUrl: data2.data.runnerUrl,
                   })
+                  this.setState({
+                    loadingOverlayVisible: false,
+                  })
+                  this.props.navigation.push('Home');
                 });
             }
             //用户名密码失败
@@ -160,12 +163,6 @@ class Main extends Component {
       }
 
     });
-  }
-  setAutoLogin(userInfo) {
-    let { username, password, ip, port, casServer } = userInfo;
-    this.setState({
-      autoLoginUri: `${casServer}/autologin?username=${username}&password=${md5(password, username)}&token=a&credentials=b&service=http://${ip}:${port}/sae`
-    })
   }
   setStore(param) {
     this.context.store.dispatch({
@@ -238,8 +235,6 @@ class Main extends Component {
                       reportUrl: data2.data.reportUrl,
                       casServer: data2.data.casServer,
                       runnerUrl: data2.data.runnerUrl,
-                    }, () => {
-                      this.setAutoLogin(userInfo);
                     })
 
                     //设置本地存储
@@ -252,7 +247,10 @@ class Main extends Component {
                       reportUrl: data2.data.reportUrl,
                       casServer: data2.data.casServer,
                     })
-                    // this.props.navigation.push('Home');
+                    this.setState({
+                      loadingOverlayVisible: false,
+                    })
+                    this.props.navigation.push('Home');
                   });
               }
               //用户名密码失败
@@ -267,33 +265,6 @@ class Main extends Component {
 
         }
       });
-  }
-  //webview注入js，使用postmessage与rn外部关联
-  webViewInjectJs() {
-    let { ip, port } = this.state;
-    return (`
-      $.post('http://${ip}:${port}/sae/property/getSystemConfig.json')
-      .then((data)=>{
-        window.postMessage(data.message.toString());
-      },(err)=>{
-        window.postMessage('failed');
-      })
-    `)
-  }
-  //获取webview传过来的参数判断是否登录成功，登录成功则跳转页面
-  webViewOnMessage(data) {
-    if (data === 'success') {
-      this.setState({
-        autoLoginUri: false,
-        loadingOverlayVisible: false
-      }, () => {
-        this.props.navigation.push('Home');
-      });
-    } else {
-      this.setState({
-        loadingOverlayVisible: false
-      })
-    }
   }
   render() {
     let { i18n: lang } = this.context.store.getState();
@@ -387,14 +358,6 @@ class Main extends Component {
             </Button>
           </View>
         </Modal>
-        {this.state.autoLoginUri ? <View
-          style={[styles.webWrap]}
-        ><WebView
-            style={{ width: 300, height: 300 }}
-            source={{ uri: this.state.autoLoginUri }}
-            injectedJavaScript={this.webViewInjectJs()}
-            onMessage={(e) => { this.webViewOnMessage(e.nativeEvent.data) }}
-          /></View> : null}
         <LoadingOverlay visible={this.state.loadingOverlayVisible} />
       </View>
     );
