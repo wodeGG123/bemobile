@@ -22,7 +22,7 @@ export default class Main extends Component {
   componentWillMount() {
     let { data } = this.props;
     let userInfo = this.context.store.getState().userInfo
-    let img = `${userInfo.reportUrl}/img/${data.flowId}.png`
+    let img = `${userInfo.reportUrl}/${data.flowId}/img/${data.flowId}.png`
     this.setState({
       img: {
         uri: img

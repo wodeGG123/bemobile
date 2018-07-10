@@ -205,7 +205,6 @@ class Main extends Component {
               }
               //用户名密码正确
               if (data.statusCode == '200') {
-
                 //获取系统信息
                 sys.getInfo({
                   loginId: data.data,

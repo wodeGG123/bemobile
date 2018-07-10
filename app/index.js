@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 import RouterMaster from './routers'
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -21,6 +21,7 @@ class AppWrap extends Component {
   }
   componentWillMount() {
     if (Platform.OS == 'ios') {
+      console.log(NativeModules)
       Orientation.getSpecificOrientation((err, orientation) => {
         switch (orientation) {
           case 'PORTRAIT':
@@ -33,7 +34,7 @@ class AppWrap extends Component {
             Orientation.lockToLandscapeLeft();
             break;
           case 'PORTRAITUPSIDEDOWN':
-            Orientation.lockToLandscape();
+            // Orientation.lockToLandscape();
             break;
           default:
             break;
