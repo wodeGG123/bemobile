@@ -42,7 +42,6 @@ export default class Main extends Component {
       dataSourceList: [],
       searchText: '',
       isRefreshing: false,
-      isDetailShow: false,
       detailData: false,
     };
   }
@@ -160,7 +159,6 @@ export default class Main extends Component {
     }, () => {
       this.refs.Detail.show(data)
     })
-
   }
   render() {
     return (
@@ -197,7 +195,7 @@ export default class Main extends Component {
           <View style={styles.scanAllPlaceholder}></View>
           <ScanAll detailShow={(data) => { this.detailShow(data) }} navigation={this.props.navigation} />
         </Drawer>
-        <DetailScreen ref='Detail' data={this.state.detailData} show={this.state.isDetailShow} />
+        {this.state.detailData && <DetailScreen ref='Detail' data={this.state.detailData} />}
       </View>
     );
   }
