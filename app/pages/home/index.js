@@ -7,7 +7,9 @@ import {
   Dimensions,
   TouchableHighlight,
   RefreshControl,
-  Platform
+  Platform,
+  BackAndroid,
+  ToastAndroid
 } from 'react-native';
 import _ from 'lodash';
 import styles from './style';
@@ -22,9 +24,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import report from '../../request/report';
 import DetailScreen from './detail/index';
+import config from '../../config'
+import i18n from '../../statics/i18n/index'
 
+let lang = i18n(config.LANGUAGE)
 var { height, width } = Dimensions.get('window');
-
+let lastBackPressed = Date.now();
 export default class Main extends Component {
   static contextTypes = {
     store: React.PropTypes.object
@@ -45,8 +50,10 @@ export default class Main extends Component {
       detailData: false,
     };
   }
+
   componentWillMount() {
     this.getRecentData();
+
   }
   drawOpen() {
     this.setState({
@@ -124,6 +131,21 @@ export default class Main extends Component {
     if (this.state.searchText.trim() != '') {
       this.getData();
     }
+  }
+  onBackPressed() {
+    if (lastBackPressed + 2000 < Date.now()) {
+      lastBackPressed = Date.now()
+      ToastAndroid.show(lang.back_exit, ToastAndroid.SHORT);
+      return true
+    }
+  }
+  componentDidMount() {
+    BackAndroid.addEventListener("hardwareBackPress", this.onBackPressed)
+  }
+
+  //组件卸载之前移除监听
+  componentWillUnmount() {
+    BackAndroid.removeEventListener('hardwareBackPress', this.onBackPressed);
   }
   onSearch = _.debounce((text) => {
     if (text.trim() == '') {

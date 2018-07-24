@@ -5,6 +5,8 @@ import {
   WebView,
   Animated,
   Dimensions,
+  BackAndroid,
+  ToastAndroid
 } from 'react-native';
 import styles from './style'
 import LeftButton from './leftButton/index';
@@ -36,6 +38,8 @@ export default class Main extends Component {
     }
   }
   show(data) {
+    // 绑定原生返回键事件
+    BackAndroid.addEventListener("hardwareBackPress", this.onBackPressed())
     let userInfo = this.context.store.getState().userInfo;
     let report_uri = userInfo.reportUrl + '/' + this.props.data.flowId + '/index.html'
     let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=a&credentials=b&service=http%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
@@ -53,6 +57,8 @@ export default class Main extends Component {
 
   }
   hide() {
+    // 解除绑定原生返回键事件
+    BackAndroid.removeEventListener('hardwareBackPress', this.a);
     this.setState({
       uri: ''
     })
@@ -65,8 +71,23 @@ export default class Main extends Component {
     ).start();             // Don't forget start!
     this.refs.progress.end();
   }
+
   componentWillMount() {
     let userInfo = this.context.store.getState().userInfo;
+  }
+  onBackPressed() {
+    var that = this;
+    let a = function () {
+      that.hide()
+      return true
+    }
+    this.a = a
+
+    return a;
+  }
+  //组件卸载之前移除监听
+  componentWillUnmount() {
+    BackAndroid.removeEventListener('hardwareBackPress', this.a);
   }
   render() {
     let { i18n: lang } = this.context.store.getState();
@@ -84,7 +105,7 @@ export default class Main extends Component {
     let uri = preLoad
     if (this.state.uri) {
       injectJS = ''
-      uri = { uri: this.state.uri }
+      uri = { uri: this.state.uri, headers: { 'Cache-Control': 'no-cache' } }
     }
     // let uri = this.props.navigation.state.params.reportUrl + '/' + this.props.navigation.state.params.flowId + '/index.html'
     // let uri = 'http://10.0.5.60:8388/sae/static/report/37e9ade5b8914136bb66b7a6ed03b169/index.html'
@@ -93,6 +114,7 @@ export default class Main extends Component {
       <Animated.View style={[styles.container, { left: this.state.fadeAnim }]}>
         <Header
           left={<LeftButton onPress={() => { this.hide() }} />}
+          center={this.props.data.reportName || ''}
         />
         <WebView
           style={styles.webView}

@@ -144,7 +144,7 @@ class Main extends Component {
                   this.setState({
                     loadingOverlayVisible: false,
                   })
-                  this.props.navigation.push('Home');
+                  this.props.navigation.replace('Home');
                 });
             }
             //用户名密码失败
@@ -249,7 +249,7 @@ class Main extends Component {
                     this.setState({
                       loadingOverlayVisible: false,
                     })
-                    this.props.navigation.push('Home');
+                    this.props.navigation.replace('Home');
                   });
               }
               //用户名密码失败

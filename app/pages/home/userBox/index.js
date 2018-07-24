@@ -9,6 +9,7 @@ import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 import member from '../../../request/member'
+import config from '../../../config/index'
 
 export default class RightButton extends Component {
   static contextTypes = {
@@ -60,7 +61,7 @@ export default class RightButton extends Component {
         </View>
         <View style={styles.infoWrap}>
           <Text style={styles.infoText1}>SDC BE</Text>
-          <Text style={styles.infoText2}>v1.0.0</Text>
+          <Text style={styles.infoText2}>{config.VERSION}</Text>
         </View>
       </View>
     )

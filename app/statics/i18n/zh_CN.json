@@ -17,5 +17,6 @@
     "login_error_port": "请设置端口！",
     "home_userbox_exit": "退出登录",
     "home_scanall_spread": "查看所有",
-    "detail_title": "详情"
+    "detail_title": "详情",
+    "back_exit": "再按一次退出BE"
 }

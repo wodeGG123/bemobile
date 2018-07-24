@@ -14,6 +14,7 @@ export default class RightButton extends Component {
         activeOpacity={0.6}
         underlayColor='transparent'
         onPress={() => { this.props.onPress() }}
+        style={styles.leftWrap}
       >
         <Icon style={styles.rightIcon} name='md-reorder' />
       </TouchableHighlight>

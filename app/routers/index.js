@@ -1,6 +1,6 @@
 //基本组件
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, AsyncStorage } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import styles from './style';
 import Title from "./title";
@@ -9,6 +9,9 @@ import Title from "./title";
 import LoginScreen from '../pages/login/index';
 import HomeScreen from '../pages/home/index';
 // import DetailScreen from '../pages/detail/index';
+
+
+
 
 //RN-router 默认加载第一个
 export default createStackNavigator({

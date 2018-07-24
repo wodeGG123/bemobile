@@ -29,13 +29,16 @@ export default StyleSheet.create({
     },
     center: {
         flex: 1,
-        textAlign: 'center',
         height: 40,
-        color: '#F6B610',
-        fontSize: 18,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 60
+    },
+    centerText: {
+        textAlign: 'center',
+        color: '#F6B610',
+        fontSize: 18,
     },
     right: {
         flex: 1,

@@ -13,7 +13,8 @@ export default class RightButton extends Component {
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor='transparent'
-        onPress={()=>{this.props.onPress()}}
+        onPress={() => { this.props.onPress() }}
+        style={styles.leftWrap}
       >
         <Icon style={styles.leftIcon} name='md-arrow-round-back' />
       </TouchableHighlight>

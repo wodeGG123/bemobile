@@ -1,4 +1,5 @@
 export default {
+    VERSION: 'v3.2.0',
     DOMAIN: '',
     /* 
     ** language config setting
