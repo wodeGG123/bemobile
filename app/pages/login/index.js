@@ -64,13 +64,26 @@ class Main extends Component {
   componentWillMount() {
     let { i18n: lang } = this.context.store.getState();
     this.setState({ lang });
+    this.reFillData()
+  }
+  reFillData() {
+    AsyncStorage.getItem('userInfo').then((data) => {
+      if (data) {
+        userInfo = JSON.parse(data);
+        let { username, password, ip, port } = userInfo;
+        this.setState({
+          username,
+          password,
+          ip,
+          port
+        })
+      }
+    })
   }
   componentDidMount() {
     let { i18n: lang } = this.context.store.getState();
     //把模态窗赋给router
     this.props.navigation.setParams({ modalConfig: this.refs.modalConfig, lang });
-    //判断是否登录过且记住登录
-    this.isLogined();
   }
   handleSubmit() {
     var { username, password, ip, port } = this.state;
@@ -175,95 +188,6 @@ class Main extends Component {
   }
   removeLocalStorage() {
     AsyncStorage.removeItem('userInfo');
-  }
-  isLogined() {
-    let userInfo = false;
-    AsyncStorage.getItem('userInfo')
-      .then((data) => {
-        if (data) {
-          //打开loading
-          this.setState({
-            loadingOverlayVisible: true,
-          })
-          userInfo = JSON.parse(data);
-          let { username, password, ip, port } = userInfo;
-          member.login({
-            username,
-            password,
-            ip,
-            port
-          })
-            .then((data) => {
-              //请求错误
-              if (data == undefined) {
-                Alert.alert(this.state.lang.login_error_setting);
-                //关闭loading
-                this.setState({
-                  loadingOverlayVisible: false,
-                })
-                return false;
-              }
-              //用户名密码正确
-              if (data.statusCode == '200') {
-                //获取系统信息
-                sys.getInfo({
-                  loginId: data.data,
-                  ip: ip,
-                  port: port
-                })
-                  .then((data2) => {
-                    //设置store的userInfo
-                    this.setStore({
-                      username,
-                      password,
-                      ip,
-                      port,
-                      token: data.data,
-                      reportUrl: data2.data.reportUrl,
-                      casServer: data2.data.casServer,
-                      runnerUrl: data2.data.runnerUrl,
-                    });
-                    //设置自动登录（webview组件需要）
-                    userInfo.casServer = data2.data.casServer;
-                    this.setState({
-                      username,
-                      password,
-                      ip,
-                      port,
-                      token: data.data,
-                      reportUrl: data2.data.reportUrl,
-                      casServer: data2.data.casServer,
-                      runnerUrl: data2.data.runnerUrl,
-                    })
-
-                    //设置本地存储
-                    this.setLocalStorage({
-                      username,
-                      password,
-                      ip,
-                      port,
-                      token: data.data,
-                      reportUrl: data2.data.reportUrl,
-                      casServer: data2.data.casServer,
-                    })
-                    this.setState({
-                      loadingOverlayVisible: false,
-                    })
-                    this.props.navigation.replace('Home');
-                  });
-              }
-              //用户名密码失败
-              else {
-                //关闭loading
-                this.setState({
-                  loadingOverlayVisible: false,
-                })
-                Alert.alert(this.state.lang.login_error_login);
-              }
-            })
-
-        }
-      });
   }
   render() {
     let { i18n: lang } = this.context.store.getState();

@@ -29,12 +29,12 @@ export default class RightButton extends Component {
       token,
     }).then((data) => {
       if (data.statusCode == '200') {
-        AsyncStorage.removeItem('userInfo');
+        // AsyncStorage.removeItem('userInfo');
         this.context.store.dispatch({
           type: 'SET_USER_INFO',
           data: false
         })
-        this.props.navigation.pop();
+        this.props.navigation.replace('Login');
 
       }
     })

@@ -6,16 +6,17 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  Text,
-  View
+    AppRegistry,
+    Text,
+    View,
+    AsyncStorage
 } from 'react-native';
 import App from './app/index';
 
-export default class bemobile extends Component {
-  render() {
-    return (<App />);
-  }
-}
 
+export default class bemobile extends Component {
+    render() {
+        return (<App />);
+    }
+}
 AppRegistry.registerComponent('bemobile', () => bemobile);

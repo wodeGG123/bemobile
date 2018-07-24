@@ -8,7 +8,8 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Text,
-  View
+  View,
+  AsyncStorage
 } from 'react-native';
 import App from './app/index'
 

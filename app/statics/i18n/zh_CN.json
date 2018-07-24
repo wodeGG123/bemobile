@@ -18,5 +18,6 @@
     "home_userbox_exit": "退出登录",
     "home_scanall_spread": "查看所有",
     "detail_title": "详情",
-    "back_exit": "再按一次退出BE"
+    "back_exit": "再按一次退出BE",
+    "welcome": "欢迎使用BE"
 }

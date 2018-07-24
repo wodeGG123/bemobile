@@ -10,27 +10,28 @@ import LoginScreen from '../pages/login/index';
 import HomeScreen from '../pages/home/index';
 // import DetailScreen from '../pages/detail/index';
 
-
-
-
 //RN-router 默认加载第一个
-export default createStackNavigator({
-    Login: {
-        screen: LoginScreen,
-        navigationOptions: {
-            headerStyle: styles.header,
-        }
-    },
-    Home: {
-        screen: HomeScreen,
-        navigationOptions: {
-            header: null,
-        }
-    },
-    // Detail: {
-    //     screen: DetailScreen,
-    //     navigationOptions: {
-    //         headerStyle: styles.header,
-    //     }
-    // }
-});
+export default function () {
+    return createStackNavigator({
+        Login: {
+            screen: LoginScreen,
+            navigationOptions: {
+                headerStyle: styles.header,
+            }
+        },
+        Home: {
+            screen: HomeScreen,
+            navigationOptions: {
+                header: null,
+            }
+        },
+        // Detail: {
+        //     screen: DetailScreen,
+        //     navigationOptions: {
+        //         headerStyle: styles.header,
+        //     }
+        // }
+    }, {
+            initialRouteName: global.indexPage
+        });
+}
