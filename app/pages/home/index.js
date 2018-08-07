@@ -114,7 +114,12 @@ export default class Main extends Component {
           }
           //如果是第一次获取
           if (page == 1) {
-            dataSourceList = data.data.list
+            // let dataSource = this.state.dataSource.cloneWithRows([]);
+            // this.setState({
+            //   dataSource: dataSource,
+            //   dataSourceList: []
+            // })
+            dataSourceList = _.cloneDeep(data.data.list)
           }
 
           let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
@@ -153,11 +158,15 @@ export default class Main extends Component {
       this.setState({
         searchText: text,
         page: 1,
+        dataSource: this.state.dataSource.cloneWithRows([]),
+        dataSourceList: []
       });
     } else {
       this.setState({
         searchText: text,
         page: 1,
+        dataSource: this.state.dataSource.cloneWithRows([]),
+        dataSourceList: []
       }, () => {
         this.getData();
       })

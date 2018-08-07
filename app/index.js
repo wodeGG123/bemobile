@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, AsyncStorage, View, Text } from 'react-native';
+import { Platform, AsyncStorage, View, Text, Alert } from 'react-native';
 import RouterMaster from './routers'
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';

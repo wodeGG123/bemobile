@@ -30,11 +30,6 @@ export default class Main extends Component {
     })
   }
   handleClick() {
-    let userInfo = this.context.store.getState().userInfo;
-    // this.props.navigation.push('Detail', {
-    //   reportUrl: userInfo.reportUrl,
-    //   flowId: this.props.data.flowId,
-    // });
     this.props.detailShow(this.props.data)
   }
   //文本太长 末尾剪切

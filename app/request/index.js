@@ -26,6 +26,7 @@ Request.post = function (url, param) {
     url = config.DOMAIN + url;
     //json to formdata
     var formData = new FormData();
+    var headers = new Headers();
     for (let i in param) {
         //判断内部属性是否是json对象，如果是则转换成string
         if (typeof (param[i]) == "object" && Object.prototype.toString.call(param[i]).toLowerCase() == "[object object]" && !param[i].length) {
@@ -34,11 +35,12 @@ Request.post = function (url, param) {
         //添加数据
         formData.append(i, param[i])
     }
+
     return fetch(url, {
-        method: 'POST',
+        method: 'post',
         headers: {},
         body: formData,
-        credentials: "include",
+        // credentials: "include",
     })
         .then((res) => { return res.json() })
         .catch(error => { console.log(error) })

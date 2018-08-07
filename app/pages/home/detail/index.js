@@ -15,6 +15,7 @@ import Title from '../../../components/navTitle/index';
 import Header from '../../../components/header/index';
 import BarProgress from '../../../components/barProgress/index';
 import { md5 } from '../../../statics/js/md5';
+import report from '../../../request/report'
 var { height, width } = Dimensions.get('window');
 var preLoad = require('./resources/preLoad.html')
 export default class Main extends Component {
@@ -45,6 +46,17 @@ export default class Main extends Component {
     let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=a&credentials=b&service=http%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
     this.setState({
       uri
+    }, () => {
+      report.addReportHistory({
+        glanceType: 0,
+        isOwn: 1,
+        reportId: this.props.data.flowId,
+        loginId: userInfo.token,
+        glanceScene: 1,
+        ip: userInfo.ip,
+        port: userInfo.port
+
+      }).then((data) => { console.log(data) })
     })
     this.refs.progress.start();
     Animated.timing(       // Uses easing functions
