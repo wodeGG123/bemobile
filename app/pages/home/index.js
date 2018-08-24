@@ -27,6 +27,7 @@ import DetailScreen from './detail/index';
 import config from '../../config'
 import i18n from '../../statics/i18n/index'
 
+
 let lang = i18n(config.LANGUAGE)
 var { height, width } = Dimensions.get('window');
 let lastBackPressed = Date.now();
@@ -78,6 +79,7 @@ export default class Main extends Component {
       port: userInfo.port,
     })
       .then((data) => {
+        console.log(data)
         if (data.statusCode == '200') {
           dataSourceList = data.data;
           let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);

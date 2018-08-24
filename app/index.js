@@ -9,6 +9,7 @@ import config from './config/index';
 import i18n from './statics/i18n/index';
 import member from './request/member';
 import sys from './request/system';
+import CookieManager from 'react-native-cookies';
 var store = createStore(reducers);//创建store
 let lang = i18n(config.LANGUAGE)
 //app wrap , you can init app in this component
@@ -72,7 +73,9 @@ export default class Main extends Component {
     }
   }
   componentWillMount() {
-    this.isLogined()
+    CookieManager.clearAll()
+      .then(() => { this.isLogined() })
+
   };
   isLogined() {
     let userInfo = false;
@@ -176,6 +179,7 @@ export default class Main extends Component {
       Router = RouterMaster()
     }
     //app入口并且设置全局store
+    global.store = store
     return (<Provider store={store}><AppWrap>{this.state.init ? <Router /> :
       <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', backgroundColor: '#131D33' }}><Text style={{ color: '#F6B710', fontSize: 16 }}>{lang.welcome}</Text></View>
     }</AppWrap></Provider>);

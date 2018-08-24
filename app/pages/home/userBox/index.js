@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 import member from '../../../request/member'
 import config from '../../../config/index'
+import CookieManager from 'react-native-cookies';
 
 export default class RightButton extends Component {
   static contextTypes = {
@@ -30,12 +31,12 @@ export default class RightButton extends Component {
     }).then((data) => {
       if (data.statusCode == '200') {
         // AsyncStorage.removeItem('userInfo');
+        CookieManager.clearAll()
         this.context.store.dispatch({
           type: 'SET_USER_INFO',
           data: false
         })
         this.props.navigation.replace('Login');
-
       }
     })
   }

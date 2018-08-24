@@ -83,7 +83,7 @@ export default class Main extends Component {
     //获取分组列表
     report.reportGroup({
       isPublished: 1,
-      isOwn: 0,
+      isOwn: 2,
       index: groupPage,
       rows,
       loginId: userInfo.token,

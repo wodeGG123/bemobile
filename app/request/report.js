@@ -9,6 +9,7 @@ export default {
     },
     //最近使用
     recentReport: (param) => {
+        console.log(`http://${param.ip}:${param.port}/sae/public/rs/app/report/searchGlance`, param)
         return (
             request.post(`http://${param.ip}:${param.port}/sae/public/rs/app/report/searchGlance`, param)
         )

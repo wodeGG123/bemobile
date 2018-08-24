@@ -15,7 +15,12 @@ import Title from '../../../components/navTitle/index';
 import Header from '../../../components/header/index';
 import BarProgress from '../../../components/barProgress/index';
 import { md5 } from '../../../statics/js/md5';
-import report from '../../../request/report'
+import report from '../../../request/report';
+
+
+
+// invoke API directly when in need
+
 var { height, width } = Dimensions.get('window');
 var preLoad = require('./resources/preLoad.html')
 export default class Main extends Component {
@@ -39,11 +44,13 @@ export default class Main extends Component {
     }
   }
   show(data) {
+
     // 绑定原生返回键事件
     BackAndroid.addEventListener("hardwareBackPress", this.onBackPressed())
     let userInfo = this.context.store.getState().userInfo;
     let report_uri = userInfo.reportUrl + '/' + this.props.data.flowId + '/index.html'
-    let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=a&credentials=b&service=http%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
+    let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=${userInfo.token}&credentials=${userInfo.token}&service=http%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
+
     this.setState({
       uri
     }, () => {
@@ -56,7 +63,7 @@ export default class Main extends Component {
         ip: userInfo.ip,
         port: userInfo.port
 
-      }).then((data) => { console.log(data) })
+      })
     })
     this.refs.progress.start();
     Animated.timing(       // Uses easing functions
