@@ -77,6 +77,7 @@ export default class Main extends Component {
       loginId: userInfo.token,
       ip: userInfo.ip,
       port: userInfo.port,
+      device: 'mobile'
     })
       .then((data) => {
         console.log(data)
@@ -107,6 +108,7 @@ export default class Main extends Component {
       loginId: userInfo.token,
       ip: userInfo.ip,
       port: userInfo.port,
+      device: 'mobile'
     })
       .then((data) => {
         if (data.statusCode == '200') {

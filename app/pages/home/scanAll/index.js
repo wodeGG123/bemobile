@@ -116,6 +116,7 @@ export default class Main extends Component {
               loginId: userInfo.token,
               ip: userInfo.ip,
               port: userInfo.port,
+              device: 'mobile'
             })
               .then((data2) => {
                 if (data2.statusCode == '200') {
