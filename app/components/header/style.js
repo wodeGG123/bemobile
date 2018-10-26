@@ -1,5 +1,4 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
-import configStyle from '../../config/style';
 var { height, width } = Dimensions.get('window');
 
 export default StyleSheet.create({
@@ -8,7 +7,6 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
-        paddingTop: configStyle.sH,
         height: Platform.OS == 'ios' ? 64 : 40,
         paddingTop: Platform.OS == 'ios' ? 24 : 0,
         backgroundColor: '#162440',

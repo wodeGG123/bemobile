@@ -91,7 +91,7 @@ export default class Main extends Component {
       port: userInfo.port,
     })
       .then((data) => {
-        if (data.statusCode == '200') {
+        if (data && data.statusCode == '200') {
           //如果分组列表结果大于rows则不需要请求report列表
           let groupMaxPage = Math.ceil(data.data.total / rows);//计算group最大页数
           if (parseInt(data.data.list.length) == parseInt(rows)) {
@@ -116,7 +116,6 @@ export default class Main extends Component {
               loginId: userInfo.token,
               ip: userInfo.ip,
               port: userInfo.port,
-              device: 'mobile'
             })
               .then((data2) => {
                 if (data2.statusCode == '200') {

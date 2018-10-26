@@ -35,14 +35,23 @@ Request.post = function (url, param) {
         //添加数据
         formData.append(i, param[i])
     }
-
+    console.log(url)
     return fetch(url, {
         method: 'post',
         headers: {},
         body: formData,
         // credentials: "include",
     })
-        .then((res) => { return res.json() })
+        .then((res) => {
+            console.log(res)
+            console.log(url)
+            if (res.status == '200') {
+                return res.json()
+            } else {
+                console.log(res)
+                throw new Error(res.status)
+            }
+        })
         .catch(error => { console.log(error) })
 
 }

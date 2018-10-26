@@ -27,7 +27,6 @@ import DetailScreen from './detail/index';
 import config from '../../config'
 import i18n from '../../statics/i18n/index'
 
-
 let lang = i18n(config.LANGUAGE)
 var { height, width } = Dimensions.get('window');
 let lastBackPressed = Date.now();
@@ -77,12 +76,10 @@ export default class Main extends Component {
       loginId: userInfo.token,
       ip: userInfo.ip,
       port: userInfo.port,
-      device: 'mobile'
     })
       .then((data) => {
-        console.log(data)
-        if (data.statusCode == '200') {
-          dataSourceList = data.data;
+        if (data && data.statusCode == '200' && data.data) {
+          dataSourceList = data.data
           let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
           this.setState({
             dataSource,
@@ -90,7 +87,6 @@ export default class Main extends Component {
             dataSourceList,
           });
         }
-
       })
   }
   //获取报表列表
@@ -108,24 +104,17 @@ export default class Main extends Component {
       loginId: userInfo.token,
       ip: userInfo.ip,
       port: userInfo.port,
-      device: 'mobile'
     })
       .then((data) => {
-        if (data.statusCode == '200') {
+        if (data && data.statusCode == '200' && data.data) {
           let maxPage = Math.ceil(data.data.total / rows);//最大页数
           if (maxPage >= page) {
             dataSourceList = dataSourceList.concat(data.data.list);
           }
           //如果是第一次获取
           if (page == 1) {
-            // let dataSource = this.state.dataSource.cloneWithRows([]);
-            // this.setState({
-            //   dataSource: dataSource,
-            //   dataSourceList: []
-            // })
             dataSourceList = _.cloneDeep(data.data.list)
           }
-
           let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
           this.setState({
             dataSource,

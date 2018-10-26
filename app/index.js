@@ -9,7 +9,7 @@ import config from './config/index';
 import i18n from './statics/i18n/index';
 import member from './request/member';
 import sys from './request/system';
-import CookieManager from 'react-native-cookies';
+import CookieManager from 'react-native-cookies';//缓存问题，cas
 var store = createStore(reducers);//创建store
 let lang = i18n(config.LANGUAGE)
 //app wrap , you can init app in this component
@@ -19,7 +19,6 @@ class AppWrap extends Component {
     super(props);
   }
   componentWillMount() {
-
     if (Platform.OS == 'ios') {
       Orientation.getSpecificOrientation((err, orientation) => {
         switch (orientation) {
@@ -100,7 +99,7 @@ export default class Main extends Component {
                 return false;
               }
               //用户名密码正确
-              if (data.statusCode == '200') {
+              if (data && data.statusCode == '200') {
                 //获取系统信息
                 sys.getInfo({
                   loginId: data.data,

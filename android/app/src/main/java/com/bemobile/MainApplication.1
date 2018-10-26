@@ -1,0 +1,133 @@
+package com.bemobile;
+
+import android.app.Application;
+
+import com.facebook.react.ReactApplication;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
+import com.psykar.cookiemanager.CookieManagerPackage;
+import com.github.yamill.orientation.OrientationPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.bemobile.MainReactPackage;
+import com.facebook.soloader.SoLoader;
+
+import com.bemobile.network.OkHttpClientProvider;
+import okhttp3.OkHttpClient;
+import javax.annotation.Nullable;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateFactory;
+import java.util.logging.Logger;
+import java.security.SecureRandom;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.security.cert.Certificate;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.util.concurrent.TimeUnit;
+import com.bemobile.network.ReactCookieJarContainer;
+
+
+
+import java.util.Arrays;
+import java.util.List;
+
+public class MainApplication extends Application implements ReactApplication {
+
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+    @Override
+    public boolean getUseDeveloperSupport() {
+      return BuildConfig.DEBUG;
+    }
+
+    @Override
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+            new RNDeviceInfo(),
+            new CookieManagerPackage(),
+            new OrientationPackage(),
+            new VectorIconsPackage()
+      );
+    }
+  };
+
+  @Override
+  public ReactNativeHost getReactNativeHost() {
+    return mReactNativeHost;
+  }
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    OkHttpClientProvider.replaceOkHttpClient(initCustomOkHttpClient());
+    SoLoader.init(this, /* native exopackage */ false);
+  }
+  public OkHttpClient initCustomOkHttpClient() {
+        if (BuildConfig.DEBUG) {
+            //RN原生的请求体  在debug上不替换
+            return OkHttpClientProvider.createClient();
+        }
+
+        OkHttpClient.Builder client = new OkHttpClient.Builder()
+                .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .cookieJar(new ReactCookieJarContainer());
+        try {
+//        ／／你的证书文件，放在android的assets文件夹下
+            setCertificates(client, getAssets().open("./server.jks"));
+            client.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        OkHttpClient.Builder builder = OkHttpClientProvider.enableTls12OnPreLollipop(client);
+        return builder.build();
+    }
+
+    public void setCertificates(OkHttpClient.Builder client, InputStream... certificates) {
+        try {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null);
+            int index = 0;
+            for (InputStream certificate : certificates) {
+
+                String certificateAlias = Integer.toString(index++);
+
+                Certificate ca=certificateFactory.generateCertificate(certificate);
+                keyStore.setCertificateEntry(certificateAlias, ca);
+                try {
+                    if (certificate != null)
+                        certificate.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+            sslContext.init(
+                    null,
+                    trustManagerFactory.getTrustManagers(),
+                    new SecureRandom()
+            );
+            client.sslSocketFactory(sslContext.getSocketFactory());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

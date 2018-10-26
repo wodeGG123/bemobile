@@ -79,17 +79,19 @@ export default class Main extends Component {
         loginId: userInfo.token,
         ip: userInfo.ip,
         port: userInfo.port,
-        device: 'mobile'
       })
         .then((data) => {
-          if (data.statusCode == '200') {
-            dataSourceList = data.data.list;
-            let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
-            this.setState({
-              dataSource,
-              dataSourceList,
-              page: page + 1,
-            });
+          if (data && data.statusCode == '200') {
+            if (data.data && data.data.list.length > 0) {
+              dataSourceList = data.data.list
+              let dataSource = this.state.dataSource.cloneWithRows(dataSourceList);
+              this.setState({
+                dataSource,
+                dataSourceList,
+                page: page + 1,
+              });
+            }
+
           }
         });
     }

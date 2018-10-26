@@ -49,8 +49,8 @@ export default class Main extends Component {
     BackAndroid.addEventListener("hardwareBackPress", this.onBackPressed())
     let userInfo = this.context.store.getState().userInfo;
     let report_uri = userInfo.reportUrl + '/' + this.props.data.flowId + '/index.html'
-    let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=${userInfo.token}&credentials=${userInfo.token}&service=http%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
-
+    let uri = `${userInfo.casServer}/autologin?username=${userInfo.username}&password=${md5(userInfo.password, userInfo.username)}&token=${userInfo.token}&credentials=${userInfo.token}&service=https%3A%2F%2F${userInfo.ip}%3A${userInfo.port}%2Fsae%2Fj_security_check&executor=${encodeURIComponent(report_uri)}`
+    console.log(uri)
     this.setState({
       uri
     }, () => {

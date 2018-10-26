@@ -9,7 +9,7 @@ import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
+import com.bemobile.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;

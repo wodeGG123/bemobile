@@ -33,5 +33,13 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
+@end
+
+@implementation NSURLRequest (AllowAnyHTTPSCertificate)
+
++ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host
+{
+  return YES;
+}
 
 @end

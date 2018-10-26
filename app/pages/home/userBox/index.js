@@ -29,7 +29,7 @@ export default class RightButton extends Component {
       port,
       token,
     }).then((data) => {
-      if (data.statusCode == '200') {
+      if (data && data.statusCode == '200') {
         // AsyncStorage.removeItem('userInfo');
         CookieManager.clearAll()
         this.context.store.dispatch({
